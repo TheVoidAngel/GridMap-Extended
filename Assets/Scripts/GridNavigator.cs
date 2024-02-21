@@ -2,9 +2,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Windows;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.Windows.Speech;
-using System.Linq;
 using System;
 
 public class GridNavigator : MonoBehaviour
@@ -17,9 +14,7 @@ public class GridNavigator : MonoBehaviour
     public int numberOfSteps = 0;
 
     public UAP_AccessibilityManager uap;
-    //Speech Reckognition variables
-    private KeywordRecognizer KeywordRecognizer;
-    private Dictionary<string, Action> Actions = new Dictionary<string, Action>();
+
 
     public int[] neighboringRows;
     public int[] neighboringColumns;
@@ -101,40 +96,12 @@ public class GridNavigator : MonoBehaviour
 
         LandmarkVect= new Vector3 (0,0,0);
         AmbientVect = new Vector3(0, 0, 0);
-
-
-
-
-        Actions.Add("up", MoveUp);
-        Actions.Add("down", MoveDown);
-        Actions.Add("right", MoveRight);
-        Actions.Add("left", MoveLeft);
-        Actions.Add("jump up", MoveUp);
-        Actions.Add("jump down", MoveDown);
-        Actions.Add("jump right", MoveRight);
-        Actions.Add("jump left", MoveLeft);
-        Actions.Add("speak coordinates", speakCoordinates);
-        Actions.Add("speak landmarks", speakLandmarks);
-        Actions.Add("speak ambiant sounds", speakAmbientSounds);
-        Actions.Add("toggle ambiant sounds", ToggleAmbientSounds);
-        KeywordRecognizer = new KeywordRecognizer(Actions.Keys.ToArray());
-        KeywordRecognizer.OnPhraseRecognized += Recognized;
-        KeywordRecognizer.Start();
         //take difference between position on grid and coordinate of landmark
         StartCoroutine(ExecuteEndOfFrame());
 
 
     }
-    private void OnApplicationQuit()
-    {
-        KeywordRecognizer.Stop();
-    }
-    private void Recognized(PhraseRecognizedEventArgs Word)
-    {
 
-        Debug.Log(Word.text);
-        Actions[Word.text].Invoke();
-    }
     void Update()
     {
         if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
