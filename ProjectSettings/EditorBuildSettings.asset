@@ -11,4 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Reset Scene.unity
     guid: 035a7348ec48bab4a95cb4ca1f531ba9
-  m_configObjects: {}
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 3f5b424c06b64164cb726993d900188e, type: 2}
+    com.unity.input.settings: {fileID: 11400000, guid: 81cb8ec4452e7ea4d8b2462d517ebf2c, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 5559510a084cf584cb31bc47a4d2edc5, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 0dbd13c96c31d0042bac9f05fa60418c, type: 2}
+    xr.sdk.mock-hmd.settings: {fileID: 11400000, guid: a8c7376f8cb4fed4fab813556a58e8e6, type: 2}

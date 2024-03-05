@@ -20,6 +20,11 @@ public class GridNavigator : MonoBehaviour
     //Speech Reckognition variables
     private KeywordRecognizer KeywordRecognizer;
     private Dictionary<string, Action> Actions = new Dictionary<string, Action>();
+    private Controls Inputs;
+    private Vector2 move = Vector2.zero;
+    public float InputRate = 0.25f;
+
+
 
     public int[] neighboringRows;
     public int[] neighboringColumns;
@@ -87,6 +92,7 @@ public class GridNavigator : MonoBehaviour
 
     private bool returnKeyPressed = false;
 
+   
     void Start()
     {
         // Initialize the starting position.
@@ -103,7 +109,18 @@ public class GridNavigator : MonoBehaviour
         AmbientVect = new Vector3(0, 0, 0);
 
 
+        
+        Inputs = new Controls();
 
+        Inputs.PlayerInputs.Move.performed += cntxt => move = cntxt.ReadValue<Vector2>();
+        Inputs.PlayerInputs.Move.canceled += cntxt => move = Vector2.zero;
+        Inputs.PlayerInputs.SpeakAroundMe.performed += cntxt => speakAroundMe();
+        Inputs.PlayerInputs.SpeakCoordinates.performed += cntxt => speakCoordinates();
+        Inputs.PlayerInputs.SpeakLandmarks.performed += cntxt => speakLandmarks();
+        Inputs.PlayerInputs.SpeakAmbiant.performed += cntxt => speakAmbientSounds();
+        Inputs.PlayerInputs.ToggleAmbiant.performed += cntxt => ToggleAmbientSounds();
+
+        Inputs.PlayerInputs.Enable();
 
         Actions.Add("up", MoveUp);
         Actions.Add("down", MoveDown);
@@ -117,13 +134,15 @@ public class GridNavigator : MonoBehaviour
         Actions.Add("speak landmarks", speakLandmarks);
         Actions.Add("speak ambiant sounds", speakAmbientSounds);
         Actions.Add("toggle ambiant sounds", ToggleAmbientSounds);
+
+
         KeywordRecognizer = new KeywordRecognizer(Actions.Keys.ToArray());
         KeywordRecognizer.OnPhraseRecognized += Recognized;
         KeywordRecognizer.Start();
 
         //take difference between position on grid and coordinate of landmark
         StartCoroutine(ExecuteEndOfFrame());
-
+        StartCoroutine(CheckMove());
 
     }
     private void OnApplicationQuit()
@@ -136,8 +155,28 @@ public class GridNavigator : MonoBehaviour
         Debug.Log(Word.text);
         Actions[Word.text].Invoke();
     }
+    private IEnumerator CheckMove()
+    {
+        while (true)
+        {
+            Debug.Log(move);
+            if (move.x < 0)
+                MoveLeft();
+            if (move.x > 0)
+                MoveRight();
+            if (move.y < 0)
+                MoveDown();
+            if (move.y > 0)
+                MoveUp();
+            yield return new WaitForSeconds(InputRate);
+        }
+
+    }
+ 
     void Update()
     {
+    
+        //Debug.Log(move);
         if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
@@ -186,42 +225,42 @@ public class GridNavigator : MonoBehaviour
 
             }
             // Move the selection based on arrow key input.
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                MoveRight();
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                MoveLeft();
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                MoveUp();
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                MoveDown();
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
-            {
-                speakAroundMe();
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.P))
-            {
-                speakCoordinates();
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.L))
-            {
-                speakLandmarks();
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.A))
-            {
-                speakAmbientSounds();
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.M))
-            {
-                ToggleAmbientSounds();
-            }
+           //else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
+           //{
+           //    MoveRight();
+           //}
+           //else if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
+           //{
+           //    MoveLeft();
+           //}
+           //else if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
+           //{
+           //    MoveUp();
+           //}
+           //else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
+           //{
+           //    MoveDown();
+           //}
+           //else if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
+           //{
+           //    speakAroundMe();
+           //}
+           //else if (UnityEngine.Input.GetKeyDown(KeyCode.P))
+           //{
+           //    speakCoordinates();
+           //}
+           //else if (UnityEngine.Input.GetKeyDown(KeyCode.L))
+           //{
+           //    speakLandmarks();
+           //}
+           //else if (UnityEngine.Input.GetKeyDown(KeyCode.A))
+           //{
+           //    speakAmbientSounds();
+           //}
+           //else if (UnityEngine.Input.GetKeyDown(KeyCode.M))
+           //{
+           //    ToggleAmbientSounds();
+           //}
         }
         else if(indexMode == true)
         {
