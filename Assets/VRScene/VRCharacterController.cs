@@ -15,6 +15,7 @@ public class VRCharacterController : MonoBehaviour
     private Vector2 move = Vector2.zero;
     public float InputRate = 0.25f;
     private bool jumping = false; 
+    public RaycastHit hit;
     // Start is called before the first frame update
     void Awake ()
     {
@@ -59,7 +60,7 @@ public class VRCharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+      
     }
     private void OnApplicationQuit()
     {
@@ -84,7 +85,25 @@ public class VRCharacterController : MonoBehaviour
     }
     private bool CheckMove(Vector3 vec)
     {
+        
+        Physics.Raycast(transform.position, vec,out hit, FileReader.GridSpacing);
+        if (hit.transform != null)
+            hit.transform.GetComponent<AudioSource>().Play();
+        //Debug.Log(hit.transform.name);
+        //put sound code here
+
         return Physics.Raycast(transform.position, vec, FileReader.GridSpacing);
+    }
+    private IEnumerator Move(Vector3 p1, Vector3 p2, float time)
+    {
+        float timer = 0;
+        while (timer <= time)
+        {
+            timer += Time.deltaTime;
+            transform.position = Vector3.Slerp(p1, p2, Mathf.SmoothStep(0f, 1f, timer / time));
+            yield return new WaitForEndOfFrame();
+        }
+        transform.position = Vector3.Slerp(p1, p2, 1);
     }
     private void Jump()
     {
@@ -97,44 +116,55 @@ public class VRCharacterController : MonoBehaviour
             if (CheckMove(vector))
                 break;
             if (vector.x < 0)
-                MoveLeft();
+                transform.Translate(Vector3.left * FileReader.GridSpacing);
             if (vector.x > 0)
-                MoveRight();
+                transform.Translate(Vector3.right * FileReader.GridSpacing);
             if (vector.z < 0)
-                MoveBackward();
+                transform.Translate(Vector3.back * FileReader.GridSpacing);
             if (vector.z > 0)
-                MoveForward();
+                transform.Translate(Vector3.forward * FileReader.GridSpacing);
         }
         jumping = false;
     }
     private void MoveForward()
     {
-       if (!CheckMove(Vector3.forward))
-          transform.Translate(Vector3.forward * FileReader.GridSpacing);
-       if (jumping)
+        if (jumping)
+        {
             JumpMovement(Vector3.forward);
+            return;
+        }
+        if (!CheckMove(Vector3.forward))
+            StartCoroutine(Move(transform.position, transform.position + (Vector3.forward * FileReader.GridSpacing), InputRate));
     }
     private void MoveBackward()
     {
-        if (!CheckMove(Vector3.back))
-            transform.Translate(Vector3.back * FileReader.GridSpacing);
         if (jumping)
+        {
             JumpMovement(Vector3.back);
+            return;
+        }        
+        if (!CheckMove(Vector3.back))
+            StartCoroutine(Move(transform.position, transform.position + (Vector3.back * FileReader.GridSpacing), InputRate));       
     }
     private void MoveLeft()
     {
-        if (!CheckMove(Vector3.left))
-            transform.Translate(Vector3.left * FileReader.GridSpacing);
         if (jumping)
+        {
             JumpMovement(Vector3.left);
-
+            return;
+        }
+        if (!CheckMove(Vector3.left))
+            StartCoroutine(Move(transform.position, transform.position + (Vector3.left * FileReader.GridSpacing), InputRate));
     }
     private void MoveRight()
     {
-        if (!CheckMove(Vector3.right))
-            transform.Translate(Vector3.right * FileReader.GridSpacing);
         if (jumping)
+        {
             JumpMovement(Vector3.right);
+            return;
+        }
+        if (!CheckMove(Vector3.right))
+            StartCoroutine(Move(transform.position, transform.position + (Vector3.right * FileReader.GridSpacing), InputRate));
     }
     private void SpeakAroundMe()
     {

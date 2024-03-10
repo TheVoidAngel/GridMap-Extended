@@ -99,10 +99,10 @@ public class VRCSVFileReader : MonoBehaviour
            // Debug.Log(lines.Length);
             int numRows = lines.Length -1 ; // for some reason, converting from excel to CSV adds an extra line ***************************************** may have to subtract 1 or not
             int numCols = lines[0].Split(',').Length;
-            //Debug.Log("Total number of Rows: " + numRows);
-            //Debug.Log("Total number of Columns: " + numCols);
-           // gridManager.rows = numRows;
-           // gridManager.columns = numCols;
+            Debug.Log("Total number of Rows: " + numRows);
+            Debug.Log("Total number of Columns: " + numCols);
+            //gridManager.rows = numRows;
+            //gridManager.columns = numCols;
 
 
             dataArray = new string[numRows, numCols];
