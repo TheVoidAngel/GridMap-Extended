@@ -43,6 +43,7 @@ public class CSVReaderFinal : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("hello");
         LoadCSV();
         //PrintMain_SubList();
         //PrintSubListPositions();

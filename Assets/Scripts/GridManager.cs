@@ -19,6 +19,7 @@ public class GridManager : MonoBehaviour
     // assign the coordinates and scale values 
     public void Start()
     {
+        
         CreateGrid();
         this.gameObject.transform.localPosition = new Vector3(-857f, 694f,0f);
         //this.gameObject.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
