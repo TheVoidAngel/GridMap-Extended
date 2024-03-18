@@ -131,7 +131,7 @@ public class VRCSVFileReader : MonoBehaviour
 
                     if (ObjIndex <= PrefabSpecifications.Count)
                     {
-                        TempObj = GameObject.Instantiate(PrefabSpecifications[ObjIndex].Prefab, new Vector3(i * GridSpacing, 0f, j * GridSpacing), Quaternion.identity, transform);
+                        TempObj = GameObject.Instantiate(PrefabSpecifications[ObjIndex].Prefab, new Vector3(i * GridSpacing, 0f, j * GridSpacing), PrefabSpecifications[ObjIndex].Prefab.transform.rotation, transform);
                         //TempObj.transform.parent = this.transform; 
                     }
 
