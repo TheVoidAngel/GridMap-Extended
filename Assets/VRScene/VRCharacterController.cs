@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using UnityEngine.Windows.Speech;
 using System.Linq;
 using System;
-public class VRCharacterController : MonoBehaviour
+using Fusion;
+using Fusion.Sockets;
+
+public class VRCharacterController : FusionMonoBehaviour
 {
     public VRCSVFileReader FileReader; 
 
@@ -16,10 +19,20 @@ public class VRCharacterController : MonoBehaviour
     public float InputRate = 0.25f;
     private bool jumping = false; 
     public RaycastHit hit;
+    public List<GameObject> SteppingSounds = new List<GameObject>(4);
     // Start is called before the first frame update
+
+    private int localPlayerID = -1;
+
+    // Use this for initialization
+  
     void Awake ()
     {
 
+        // localPlayerID = FusionNetwork.GetNetworkID();
+        Debug.LogWarning("starting character");
+
+        FileReader = VRCSVFileReader.instance;
         //physical interface control setup (keyboard, controller)
         Inputs = new Controls();
         Inputs.PlayerInputs.Move.performed += cntxt => move = cntxt.ReadValue<Vector2>();
@@ -49,7 +62,13 @@ public class VRCharacterController : MonoBehaviour
         //lock character to grid
         transform.position = new Vector3(transform.position.x - (transform.position.x % FileReader.GridSpacing), transform.position.y,
             transform.position.z - (transform.position.z % FileReader.GridSpacing));
-            
+        Invoke(nameof(InitPlayerPosition), 0.25f);
+    }
+
+    private void InitPlayerPosition()
+    {
+        transform.position = new Vector3(transform.position.x - (transform.position.x % FileReader.GridSpacing), transform.position.y,
+           transform.position.z - (transform.position.z % FileReader.GridSpacing));
     }
     private void Recognized(PhraseRecognizedEventArgs Word)
     {
@@ -60,7 +79,7 @@ public class VRCharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-      
+        
     }
     private void OnApplicationQuit()
     {
@@ -128,6 +147,7 @@ public class VRCharacterController : MonoBehaviour
     }
     private void MoveForward()
     {
+      SteppingSounds[0].GetComponent<AudioSource>().Play();
         if (jumping)
         {
             JumpMovement(Vector3.forward);
@@ -138,6 +158,7 @@ public class VRCharacterController : MonoBehaviour
     }
     private void MoveBackward()
     {
+        SteppingSounds[1].GetComponent<AudioSource>().Play();
         if (jumping)
         {
             JumpMovement(Vector3.back);
@@ -148,6 +169,7 @@ public class VRCharacterController : MonoBehaviour
     }
     private void MoveLeft()
     {
+        SteppingSounds[3].GetComponent<AudioSource>().Play();
         if (jumping)
         {
             JumpMovement(Vector3.left);
@@ -158,6 +180,7 @@ public class VRCharacterController : MonoBehaviour
     }
     private void MoveRight()
     {
+        SteppingSounds[2].GetComponent<AudioSource>().Play();
         if (jumping)
         {
             JumpMovement(Vector3.right);

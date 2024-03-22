@@ -9,6 +9,7 @@ using UnityEngine;
 }
 public class VRCSVFileReader : MonoBehaviour
 {
+    public static VRCSVFileReader instance;
     [Range(1, 10)] public float GridSpacing =5 ;
     public TextAsset csvFile; // Reference to your .csv file (drag and drop it in the Unity inspector)
     public string[,] dataArray;
@@ -22,13 +23,30 @@ public class VRCSVFileReader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
- 
+        if (instance == null)
+            instance = this; 
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (this.transform.childCount > 0)
+        {
+            LoadMap = false;
+        }
+        if (LoadMap == true)
+        {
+            LoadMapFromCSV();
+            LoadMap = false;
+        }
+        if (UnloadMap == true)
+        {
+            for (int i = 0; i < this.transform.childCount; i++)
+            {
+                Destroy(this.transform.GetChild(i).gameObject);
+            }
+            UnloadMap = false;
+        }
     }
     private void OnValidate()
     {
@@ -41,14 +59,14 @@ public class VRCSVFileReader : MonoBehaviour
             LoadMapFromCSV();
             LoadMap = false;
         }
-        if(UnloadMap ==true)
-        {
-            for (int i=0; i<this.transform.childCount; i++)
-            {
-                DestroyImmediate(this.transform.GetChild(i).gameObject);
-            }
-            UnloadMap = false;
-        }
+       //if(UnloadMap ==true)
+       //{
+       //    for (int i=0; i<this.transform.childCount; i++)
+       //    {
+       //        DestroyImmediate(this.transform.GetChild(i).gameObject);
+       //    }
+       //    UnloadMap = false;
+       //}
     }
     private void dothing()
     {
@@ -131,7 +149,7 @@ public class VRCSVFileReader : MonoBehaviour
 
                     if (ObjIndex <= PrefabSpecifications.Count)
                     {
-                        TempObj = GameObject.Instantiate(PrefabSpecifications[ObjIndex].Prefab, new Vector3(i * GridSpacing, 0f, j * GridSpacing), PrefabSpecifications[ObjIndex].Prefab.transform.rotation, transform);
+                        TempObj = GameObject.Instantiate(PrefabSpecifications[ObjIndex].Prefab, new Vector3(i * GridSpacing, PrefabSpecifications[ObjIndex].Prefab.transform.position.y, j * GridSpacing), PrefabSpecifications[ObjIndex].Prefab.transform.rotation, transform);
                         //TempObj.transform.parent = this.transform; 
                     }
 
