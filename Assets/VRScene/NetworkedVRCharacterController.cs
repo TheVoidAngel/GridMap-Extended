@@ -8,25 +8,23 @@ using System;
 using Fusion;
 using Fusion.Sockets;
 
-public class VRCharacterController : FusionMonoBehaviour
+public class NetworkedVRCharacterController : FusionMonoBehaviour
 {
-    public VRCSVFileReader FileReader; 
+    public VRCSVFileReader FileReader;
 
     private KeywordRecognizer KeywordRecognizer;
     private Dictionary<string, Action> Actions = new Dictionary<string, Action>();
     private Controls Inputs;
-    private Vector2 move = Vector2.zero;
+    [HideInInspector] public Vector2 move = Vector2.zero;
     public float InputRate = 0.25f;
-    private bool jumping = false; 
+    private bool jumping = false;
     public RaycastHit hit;
     public List<GameObject> SteppingSounds = new List<GameObject>(4);
     // Start is called before the first frame update
-    public BasicSpawner Spawner; 
-    private int localPlayerID = -1;
-
+    public BasicSpawner Spawner;
     // Use this for initialization
-  
-    void Awake ()
+
+    void Awake()
     {
         //Spawner.GetComponent<Controls>()
         // localPlayerID = FusionNetwork.GetNetworkID();
@@ -34,15 +32,15 @@ public class VRCharacterController : FusionMonoBehaviour
 
         FileReader = VRCSVFileReader.instance;
         //physical interface control setup (keyboard, controller)
-        Inputs = new Controls();
-        Inputs.PlayerInputs.Move.performed += cntxt => move = cntxt.ReadValue<Vector2>();
-        Inputs.PlayerInputs.Move.canceled += cntxt => move = Vector2.zero;
-        Inputs.PlayerInputs.SpeakAroundMe.performed += cntxt => SpeakAroundMe();
-        Inputs.PlayerInputs.SpeakCoordinates.performed += cntxt => SpeakCoordinates();
-        Inputs.PlayerInputs.SpeakLandmarks.performed += cntxt => SpeakLandmarks();
-        Inputs.PlayerInputs.SpeakAmbiant.performed += cntxt => SpeakAmbientSounds();
-        Inputs.PlayerInputs.ToggleAmbiant.performed += cntxt => ToggleAmbientSounds();
-        Inputs.PlayerInputs.Enable();
+      // Inputs = new Controls();
+      // Inputs.PlayerInputs.Move.performed += cntxt => move = cntxt.ReadValue<Vector2>();
+      // Inputs.PlayerInputs.Move.canceled += cntxt => move = Vector2.zero;
+      // Inputs.PlayerInputs.SpeakAroundMe.performed += cntxt => SpeakAroundMe();
+      // Inputs.PlayerInputs.SpeakCoordinates.performed += cntxt => SpeakCoordinates();
+      // Inputs.PlayerInputs.SpeakLandmarks.performed += cntxt => SpeakLandmarks();
+      // Inputs.PlayerInputs.SpeakAmbiant.performed += cntxt => SpeakAmbientSounds();
+      // Inputs.PlayerInputs.ToggleAmbiant.performed += cntxt => ToggleAmbientSounds();
+      // Inputs.PlayerInputs.Enable();
         StartCoroutine(MoveInput());
 
         //voice command control setup 
@@ -79,7 +77,7 @@ public class VRCharacterController : FusionMonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
     private void OnApplicationQuit()
     {
@@ -90,7 +88,7 @@ public class VRCharacterController : FusionMonoBehaviour
     {
         while (true)
         {
-           // Debug.Log(move);
+            // Debug.Log(move);
             if (move.x < 0)
                 MoveLeft();
             if (move.x > 0)
@@ -104,9 +102,9 @@ public class VRCharacterController : FusionMonoBehaviour
     }
     private bool CheckMove(Vector3 vec)
     {
-        
-        Physics.Raycast(transform.position, vec,out hit, FileReader.GridSpacing);
-        if (hit.transform != null)
+
+        Physics.Raycast(transform.position, vec, out hit, FileReader.GridSpacing);
+        if (hit.transform)
             hit.transform.GetComponent<AudioSource>().Play();
         //Debug.Log(hit.transform.name);
         //put sound code here
@@ -126,7 +124,7 @@ public class VRCharacterController : FusionMonoBehaviour
     }
     private void Jump()
     {
-        jumping = true; 
+        jumping = true;
     }
     private void JumpMovement(Vector3 vector)
     {
@@ -147,7 +145,7 @@ public class VRCharacterController : FusionMonoBehaviour
     }
     private void MoveForward()
     {
-      SteppingSounds[0].GetComponent<AudioSource>().Play();
+        SteppingSounds[0].GetComponent<AudioSource>().Play();
         if (jumping)
         {
             JumpMovement(Vector3.forward);
@@ -163,9 +161,9 @@ public class VRCharacterController : FusionMonoBehaviour
         {
             JumpMovement(Vector3.back);
             return;
-        }        
+        }
         if (!CheckMove(Vector3.back))
-            StartCoroutine(Move(transform.position, transform.position + (Vector3.back * FileReader.GridSpacing), InputRate));       
+            StartCoroutine(Move(transform.position, transform.position + (Vector3.back * FileReader.GridSpacing), InputRate));
     }
     private void MoveLeft()
     {

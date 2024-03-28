@@ -4,13 +4,41 @@ using Fusion;
 using Fusion.Sockets;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Windows.Speech;
+using System.Linq;
 
 public class BasicSpawner : FusionMonoBehaviour, INetworkRunnerCallbacks
 {
     private NetworkRunner _runner;
     [SerializeField] private NetworkPrefabRef _playerPrefab;
     private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
+    private KeywordRecognizer KeywordRecognizer;
+    private Dictionary<string, Action> Actions = new Dictionary<string, Action>();
 
+    private Controls Inputs;
+    private void OnEnable()
+    {
+       //Actions.Add("up", MoveForward);
+       //Actions.Add("down", MoveBackward);
+       //Actions.Add("right", MoveRight);
+       //Actions.Add("left", MoveLeft);
+       //Actions.Add("jump", Jump);
+       //Actions.Add("speak coordinates", SpeakCoordinates);
+       //Actions.Add("speak landmarks", SpeakLandmarks);
+       //Actions.Add("speak ambiant sounds", SpeakAmbientSounds);
+       //Actions.Add("toggle ambiant sounds", ToggleAmbientSounds);
+       //KeywordRecognizer = new KeywordRecognizer(Actions.Keys.ToArray());
+       //KeywordRecognizer.OnPhraseRecognized += Recognized;
+       //KeywordRecognizer.Start();
+        Inputs = new Controls();
+        Inputs.PlayerInputs.Enable();
+    }
+     private void Recognized(PhraseRecognizedEventArgs Word)
+    {
+
+        Debug.Log(Word.text);
+        Actions[Word.text].Invoke();
+    }
     private void OnGUI()
     {
         if (_runner == null)
@@ -104,21 +132,28 @@ public class BasicSpawner : FusionMonoBehaviour, INetworkRunnerCallbacks
             _spawnedCharacters.Remove(player);
         }
     }
+    
     public void OnInput(NetworkRunner runner, NetworkInput input)
-    {
+    { 
+        
+       
         var data = new NetworkInputData();
-        
-        if (Input.GetKey(KeyCode.W))
-            data.direction += Vector3.forward;
-        
-        if (Input.GetKey(KeyCode.S))
-            data.direction += Vector3.back;
-        
-        if (Input.GetKey(KeyCode.A))
-            data.direction += Vector3.left;
-        
-        if (Input.GetKey(KeyCode.D))
-            data.direction += Vector3.right;
+        var PlayerActions = Inputs.PlayerInputs;
+
+        data.direction = PlayerActions.Move.ReadValue<Vector2>();
+
+        //Debug.LogWarning(data.direction);
+       //if (Input.GetKey(KeyCode.W))
+       //    data.direction += Vector3.forward;
+       // 
+       // if (Input.GetKey(KeyCode.S))
+       //     data.direction += Vector3.back;
+       // 
+       // if (Input.GetKey(KeyCode.A))
+       //     data.direction += Vector3.left;
+       // 
+       // if (Input.GetKey(KeyCode.D))
+       //     data.direction += Vector3.right;
         
         input.Set(data);
     }

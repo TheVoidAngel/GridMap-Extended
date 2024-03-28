@@ -5,7 +5,7 @@ using Fusion;
 
 public class NetworkedController : NetworkBehaviour
 {
-    public VRCharacterController VRCharacterController; 
+    public NetworkedVRCharacterController CharacterController; 
     private NetworkCharacterController _cc;
     
     private void Awake()
@@ -19,7 +19,11 @@ public class NetworkedController : NetworkBehaviour
         if (GetInput(out NetworkInputData data))
         {
             data.direction.Normalize();
-            _cc.Move(5 * data.direction * Runner.DeltaTime);
+            CharacterController.move = data.direction;
+            //transform.position += data.direction;
+           // _cc.Move(5 * data.direction * Runner.DeltaTime);
+            
         }
     }
+
 }

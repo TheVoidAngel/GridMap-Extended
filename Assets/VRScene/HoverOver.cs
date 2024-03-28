@@ -4,12 +4,16 @@ using UnityEngine;
 using UnityEngine.EventSystems; 
 public class HoverOver : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public AudioSource Audio;
     public float ScaleTime = 0.1f, ScaleAmount = 1.2f;
     // Start is called before the first frame update
 
     //OnPointerDown
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (Audio)
+            Audio.Play();
+
             StartCoroutine(ScaleButton(ScaleAmount));
     }
     public void OnPointerExit(PointerEventData eventData)
@@ -21,7 +25,7 @@ public class HoverOver : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         float InitScale = (transform.localScale.x);
         float iterator = 0;
 
-        Debug.Log("akdslj");
+       
         while (iterator < ScaleTime)
         {
             yield return new WaitForEndOfFrame();
