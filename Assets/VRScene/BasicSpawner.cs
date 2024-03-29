@@ -134,8 +134,8 @@ public class BasicSpawner : FusionMonoBehaviour, INetworkRunnerCallbacks
     }
     
     public void OnInput(NetworkRunner runner, NetworkInput input)
-    { 
-        
+    {
+
        
         var data = new NetworkInputData();
         var PlayerActions = Inputs.PlayerInputs;
